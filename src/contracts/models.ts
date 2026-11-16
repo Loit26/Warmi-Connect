@@ -92,9 +92,14 @@ export interface CollaborationRequest {
 
 export interface SentRequest extends CollaborationRequest {
   project: Pick<ProjectCard, "id" | "title" | "category">;
+  /** Quién publicó el proyecto al que postulaste (opcional hasta que B lo entregue). */
+  creator?: Pick<PublicProfile, "id" | "displayName" | "specialty">;
+  /** Qué apoyo pide el proyecto, para recordar a qué postulaste. */
+  supportNeed?: string;
 }
 
 export interface ReceivedRequest extends CollaborationRequest {
   project: Pick<ProjectCard, "id" | "title">;
-  sender: Pick<PublicProfile, "id" | "displayName" | "specialty">;
+  sender: Pick<PublicProfile, "id" | "displayName" | "specialty"> &
+    Partial<Pick<PublicProfile, "skills" | "bio">>;
 }
