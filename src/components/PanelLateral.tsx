@@ -1,5 +1,6 @@
 // Columna derecha: llena el espacio con información útil según la pantalla.
 import { useEffect, useState } from "react";
+import { IconoEdificio, IconoFrasco, IconoPersonas } from "./Ilustraciones";
 import { services } from "../services";
 
 export type RutaPanel = "explorar" | "publicar" | "publicado" | "solicitudes";
@@ -37,14 +38,17 @@ export function PanelLateral({ ruta, conteos, onIr }: Props) {
         <h2>Warmi en números</h2>
         <div className="metricas">
           <div className="metrica">
+            <IconoFrasco clase="metrica-icono" />
             <strong>{totales.proyectos}</strong>
             <span>Proyectos</span>
           </div>
           <div className="metrica">
+            <IconoPersonas clase="metrica-icono" />
             <strong>{totales.creadoras}</strong>
             <span>Creadoras</span>
           </div>
           <div className="metrica">
+            <IconoEdificio clase="metrica-icono" />
             <strong>{conteos.enviadas}</strong>
             <span>Tus postulaciones</span>
           </div>

@@ -32,7 +32,7 @@ export const LIMITES = {
   supportNeed: { min: 10, max: 300 },
 } as const;
 
-export type CampoProyecto = keyof ProjectInput;
+export type CampoProyecto = Exclude<keyof ProjectInput, "coverImage">;
 export type ErroresProyecto = Partial<Record<CampoProyecto, string>>;
 
 /** Formulario a medio llenar: la categoría puede estar vacía. */
@@ -60,4 +60,22 @@ export function validarProyecto(datos: BorradorProyecto): ErroresProyecto {
   }
 
   return errores;
+}
+
+// Imagen de portada (opcional). Medidas y peso recomendados para que cargue rápido en celular.
+export const IMAGEN = {
+  tiposPermitidos: ["image/jpeg", "image/png", "image/webp"],
+  maxBytes: 800 * 1024,
+  recomendada: "1200 × 630 px (horizontal)",
+} as const;
+
+/** Devuelve un mensaje de error si el archivo no sirve, o "" si está bien. */
+export function validarImagen(archivo: { type: string; size: number }): string {
+  if (!(IMAGEN.tiposPermitidos as readonly string[]).includes(archivo.type)) {
+    return "Usa una imagen JPG, PNG o WebP.";
+  }
+  if (archivo.size > IMAGEN.maxBytes) {
+    return "La imagen pesa más de 800 KB. Reduce su tamaño e inténtalo de nuevo.";
+  }
+  return "";
 }

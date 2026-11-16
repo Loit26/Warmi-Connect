@@ -2,11 +2,14 @@
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import type { ProjectDetails, Skill } from "../../contracts/models";
 import { WarmiError } from "../../contracts/services";
+import { IconoImagen, IlustracionCategoria } from "../../components/Ilustraciones";
 import { services } from "../../services";
 import {
   CATEGORIAS,
   HABILIDADES,
+  IMAGEN,
   LIMITES,
+  validarImagen,
   validarProyecto,
   type BorradorProyecto,
   type CampoProyecto,
@@ -157,6 +160,7 @@ export function PublicarProyecto({ onPublicado, onCancelar }: Props) {
         description: datos.description.trim(),
         requiredSkills: datos.requiredSkills,
         supportNeed: datos.supportNeed.trim(),
+        coverImage: datos.coverImage,
       });
       onPublicado(proyecto);
     } catch (err) {
@@ -183,7 +187,7 @@ export function PublicarProyecto({ onPublicado, onCancelar }: Props) {
           Publica tu proyecto y <em>suma aliadas</em>
         </h1>
         <p className="subtitulo">
-          Tu proyecto aparecerá como una convocatoria abierta. Responde en 6 pasos cortos: cada uno
+          Tu proyecto aparecerá como una convocatoria abierta. Responde en 6 pasos cortos más una imagen opcional: cada uno
           trae un ejemplo para que sepas qué escribir.
         </p>
       </div>
@@ -300,6 +304,14 @@ export function PublicarProyecto({ onPublicado, onCancelar }: Props) {
         />
         </Paso>
 
+        <Paso n={7}>
+          <SubirPortada
+            categoria={datos.category}
+            imagen={datos.coverImage}
+            onCambiar={(img) => cambiar("coverImage", img)}
+          />
+        </Paso>
+
         {errorGeneral && (
           <p className="alerta-error" role="alert">
             {errorGeneral}
@@ -316,6 +328,90 @@ export function PublicarProyecto({ onPublicado, onCancelar }: Props) {
         </div>
       </form>
     </section>
+  );
+}
+
+/** Paso opcional: imagen de portada. Si no sube nada, se usa una ilustración según la categoría. */
+function SubirPortada({
+  categoria,
+  imagen,
+  onCambiar,
+}: {
+  categoria: BorradorProyecto["category"];
+  imagen?: string;
+  onCambiar: (img: string | undefined) => void;
+}) {
+  const [error, setError] = useState("");
+
+  function elegir(archivo?: File) {
+    if (!archivo) return;
+    const problema = validarImagen(archivo);
+    if (problema) {
+      setError(problema);
+      return;
+    }
+    setError("");
+    const lector = new FileReader();
+    lector.onload = () => onCambiar(String(lector.result));
+    lector.readAsDataURL(archivo);
+  }
+
+  return (
+    <div className="campo">
+      <div className="campo-cabecera">
+        <label htmlFor="portada">
+          Imagen de portada <span className="opcional">(opcional)</span>
+        </label>
+      </div>
+      <p className="ayuda">Una imagen hace que tu convocatoria destaque en el catálogo.</p>
+      <div className="guia">
+        <span>
+          <b>Qué imagen usar:</b> una foto real de tu proyecto (tu equipo, el prototipo, el cultivo, el taller)
+          o un arte sencillo con tu nombre. Evita fotos borrosas, capturas de pantalla y textos pequeños.
+        </span>
+        <span>
+          <b>Medidas:</b> horizontal, {IMAGEN.recomendada}. Formato JPG, PNG o WebP, de máximo 800 KB.
+        </span>
+        <span>
+          <b>Cómo crearla gratis:</b> en Canva elige “Presentación” o crea un diseño de 1200 × 630 px, y descarga
+          en JPG. Para bajar el peso usa squoosh.app.
+        </span>
+      </div>
+
+      <div className="portada-subida">
+        <div className="portada-vista">
+          {imagen ? (
+            <img src={imagen} alt="Vista previa de la portada" />
+          ) : (
+            <IlustracionCategoria categoria={categoria || "Innovación"} />
+          )}
+        </div>
+        <div className="portada-controles">
+          <p className="nota">
+            {imagen
+              ? "Así se verá tu portada."
+              : "Mientras no subas una imagen, usaremos esta ilustración según tu categoría."}
+          </p>
+          <label className="boton secundario archivo">
+            <IconoImagen clase="icono-boton" /> {imagen ? "Cambiar imagen" : "Subir imagen"}
+            <input
+              id="portada"
+              type="file"
+              accept={IMAGEN.tiposPermitidos.join(",")}
+              onChange={(e) => elegir(e.target.files?.[0])}
+            />
+          </label>
+          {imagen && (
+            <button type="button" className="boton texto-peligro" onClick={() => onCambiar(undefined)}>
+              Quitar imagen
+            </button>
+          )}
+        </div>
+      </div>
+      <p className="error" role="alert">
+        {error}
+      </p>
+    </div>
   );
 }
 
