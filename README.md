@@ -156,8 +156,6 @@ Registro completo en `docs/validacion/`.
 
 ## 📖 Instrucciones de ejecución
 
-> **[COMPLETAR cuando esté el código]** Requisitos, instalación y ejecución local.
-
 ```bash
 cd [CARPETA-APP]
 # instalar dependencias
