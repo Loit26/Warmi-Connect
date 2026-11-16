@@ -5,7 +5,7 @@ Plataforma digital colaborativa para visibilizar proyectos liderados por mujeres
 
 Proyecto del **Grupo 23** · Eje 2: Orientación laboral · *Talento visible y autonomía económica* · [NOMBRE DEL EVENTO / AÑO]
 
-🔗 Demo: **[LINK DE LA DEMO]** · 📄 Propuesta: **[LINK DE LA PROPUESTA]** · 🎬 Video / pitch: **[LINK, SI HAY]**
+🔗 Demo: **[LINK DE LA DEMO]** · 📄 Propuesta: **[LINK DE LA PROPUESTA]** 
 
 ![Panel de inicio de Warmi Connect](docs/diseno/panel-inicio.png)
 
