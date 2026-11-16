@@ -3,7 +3,7 @@
 **Conecta, colabora e impulsa.**
 Plataforma digital colaborativa para visibilizar proyectos liderados por mujeres y conectarlos con oportunidades de apoyo.
 
-Proyecto del **Grupo 23** · Eje 2: Orientación laboral · *Talento visible y autonomía económica* · [NOMBRE DEL EVENTO / AÑO]
+Proyecto del **Grupo 23** · Eje 2: Orientación laboral · *Talento visible y autonomía económica* · 
 
 🔗 Demo: **[LINK DE LA DEMO]** · 📄 Propuesta: **https://drive.google.com/drive/folders/1We6Y3w22lBiFwEtwyjwA1_eTRYa4UuW-** 
 
