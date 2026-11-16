@@ -7,10 +7,6 @@ Proyecto del **Grupo 23** · Eje 2: Orientación laboral · *Talento visible y a
 
 🔗 Demo: **[LINK DE LA DEMO]** · 📄 Propuesta: **https://drive.google.com/drive/folders/1We6Y3w22lBiFwEtwyjwA1_eTRYa4UuW-** 
 
-![Panel de inicio de Warmi Connect]https://drive.google.com/drive/folders/1We6Y3w22lBiFwEtwyjwA1_eTRYa4UuW-
-
-> **Estado:** el panel de arriba es el diseño de la pantalla de inicio. Las cifras que muestra (120 proyectos, 560 creadoras, 28 instituciones) y los proyectos destacados son datos de ejemplo del diseño, no resultados reales. Los resultados reales se medirán en el piloto (enero a marzo de 2027).
-
 ## 🗂️ Estructura del repositorio
 
 ```
