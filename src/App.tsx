@@ -1,138 +1,161 @@
-import React, { useState } from 'react';
-import ExploreProjects from './components/ExploreProjects';
-import ProjectDetail from './components/ProjectDetail';
-import CollaborationModal from './components/CollaborationModal';
+// Estructura general: menú lateral + barra superior + pantalla activa + panel derecho.
+// Navegación simple por "#" en la URL para no agregar librerías.
+import { useCallback, useEffect, useState } from "react";
+import type { ProjectDetails } from "./contracts/models";
+import { IconoExplorar, IconoPublicar, IconoSolicitudes } from "./components/Iconos";
+import { PanelLateral, type Conteos } from "./components/PanelLateral";
+import { Explorar } from "./features/explorar/Explorar";
+import { Confirmacion } from "./features/publicar/Confirmacion";
+import { PublicarProyecto } from "./features/publicar/PublicarProyecto";
+import { MisSolicitudes } from "./features/solicitudes/MisSolicitudes";
+import { services } from "./services";
 
-// Importando los módulos creados por tus compañeros (Persona A)
-import { PublicarProyecto } from './features/publicar/PublicarProyecto';
-import { MisSolicitudes } from './features/solicitudes/MisSolicitudes';
+type Ruta = "explorar" | "publicar" | "publicado" | "solicitudes";
 
-import { ProjectCard, ProjectDetails, RequestInput } from './contracts/models';
+const TITULO_RUTA: Record<Ruta, string> = {
+  explorar: "Explorar proyectos",
+  publicar: "Publicar proyecto",
+  publicado: "Publicar proyecto",
+  solicitudes: "Mis solicitudes",
+};
+
+function leerRuta(): Ruta {
+  const r = window.location.hash.replace("#/", "");
+  return (["explorar", "publicar", "publicado", "solicitudes"] as Ruta[]).includes(r as Ruta)
+    ? (r as Ruta)
+    : "explorar";
+}
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<'explore' | 'publicar' | 'solicitudes'>('explore');
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [ruta, setRuta] = useState<Ruta>(leerRuta);
+  const [publicado, setPublicado] = useState<ProjectDetails | null>(null);
+  const [conteos, setConteos] = useState<Conteos>({
+    enviadas: 0,
+    recibidas: 0,
+    pendientesPorResponder: 0,
+  });
 
-  // Datos mock iniciales para el catálogo
-  const mockProjects: ProjectCard[] = [
-    {
-      id: '1',
-      ownerId: 'user-1',
-      title: 'Detección temprana del cáncer mediante IA',
-      category: 'Ciencia',
-      problem: 'Modelo de IA para identificar signos tempranos de cáncer de mama en imágenes médicas.',
-      requiredSkills: ['Análisis de datos', 'Investigación'],
-      supportNeed: 'Financiamiento y validación clínica',
-      creator: {
-        id: 'user-1',
-        displayName: 'Dra. Valeria Torres',
-        specialty: 'Investigadora en Salud'
-      }
-    },
-    {
-      id: '2',
-      ownerId: 'user-2',
-      title: 'Bioplásticos a partir de residuos orgánicos',
-      category: 'Medioambiente',
-      problem: 'Desarrollo de un material biodegradable que reduce la contaminación por plásticos.',
-      requiredSkills: ['Investigación', 'Medioambiente y sostenibilidad'],
-      supportNeed: 'Aliados de laboratorio',
-      creator: {
-        id: 'user-2',
-        displayName: 'Ing. Sofia Ramos',
-        specialty: 'Ingeniera ambiental'
-      }
+  // Vuelve a contar solicitudes. Se llama al abrir la app y cada vez que algo cambia
+  // (enviar una solicitud, aceptar o rechazar), para que los contadores siempre suban o bajen.
+  const refrescarConteos = useCallback(async () => {
+    try {
+      const [recibidas, enviadas] = await Promise.all([
+        services.listReceivedRequests(),
+        services.listSentRequests(),
+      ]);
+      setConteos({
+        enviadas: enviadas.length,
+        recibidas: recibidas.length,
+        pendientesPorResponder: recibidas.filter((s) => s.status === "pending").length,
+      });
+    } catch {
+      // Si falla, se mantienen los números anteriores.
     }
-  ];
+  }, []);
 
-  const selectedProjectDetails: ProjectDetails | null = selectedProjectId 
-    ? {
-        ...mockProjects.find(p => p.id === selectedProjectId)!,
-        description: 'Descripción detallada de la iniciativa, metodología aplicada y avance actual en el laboratorio o campo de estudio.',
-        creator: {
-          id: mockProjects.find(p => p.id === selectedProjectId)?.ownerId || '1',
-          displayName: mockProjects.find(p => p.id === selectedProjectId)?.creator.displayName || '',
-          specialty: mockProjects.find(p => p.id === selectedProjectId)?.creator.specialty || '',
-          skills: ['Investigación', 'Análisis de datos'],
-          bio: 'Especialista dedicada al desarrollo científico.'
-        },
-        createdAt: '2026-03-01'
-      }
-    : null;
+  useEffect(() => {
+    const alCambiar = () => setRuta(leerRuta());
+    window.addEventListener("hashchange", alCambiar);
+    return () => window.removeEventListener("hashchange", alCambiar);
+  }, []);
 
-  const handleSendRequest = async (input: RequestInput) => {
-    console.log("Solicitud enviada:", input);
-    await new Promise(resolve => setTimeout(resolve, 800));
+  useEffect(() => {
+    refrescarConteos();
+  }, [ruta, refrescarConteos]);
+
+  const ir = (r: Ruta) => {
+    window.location.hash = `/${r}`;
+    window.scrollTo(0, 0);
   };
+
+  let pantalla;
+  if (ruta === "publicado" && publicado) {
+    pantalla = (
+      <Confirmacion
+        proyecto={publicado}
+        onIrASolicitudes={() => ir("solicitudes")}
+        onPublicarOtro={() => ir("publicar")}
+      />
+    );
+  } else if (ruta === "solicitudes") {
+    pantalla = (
+      <MisSolicitudes
+        onExplorar={() => ir("explorar")}
+        onPublicar={() => ir("publicar")}
+        onCambio={refrescarConteos}
+      />
+    );
+  } else if (ruta === "explorar") {
+    pantalla = <Explorar onPublicar={() => ir("publicar")} onSolicitudEnviada={refrescarConteos} />;
+  } else {
+    pantalla = (
+      <PublicarProyecto
+        onPublicado={(p) => {
+          setPublicado(p);
+          ir("publicado");
+        }}
+        onCancelar={() => ir("explorar")}
+      />
+    );
+  }
+
+  const activa = ruta === "publicado" ? "publicar" : ruta;
 
   return (
     <div className="app">
-      {/* Menú lateral oficial de Warmi Connect */}
       <aside className="menu">
         <div className="marca">
-          <span className="marca-nombre">Warmi Connect</span>
-          <span className="marca-lema">Conecta · Colabora · Impulsa</span>
+          <span className="marca-logo" aria-hidden="true">
+            W
+          </span>
+          <span className="marca-texto">
+            <span className="marca-nombre">Warmi Connect</span>
+            <span className="marca-lema">Conecta · Colabora · Impulsa</span>
+          </span>
         </div>
-        <nav>
-          <a 
-            href="#explore" 
-            className={currentTab === 'explore' && !selectedProjectId ? 'activo' : ''}
-            onClick={(e) => { e.preventDefault(); setCurrentTab('explore'); setSelectedProjectId(null); }}
-          >
+        <nav aria-label="Menú principal">
+          <a href="#/explorar" className={activa === "explorar" ? "activo" : ""}>
+            <IconoExplorar clase="menu-icono" />
             Explorar proyectos
           </a>
-          <a 
-            href="#publicar" 
-            className={currentTab === 'publicar' ? 'activo' : ''}
-            onClick={(e) => { e.preventDefault(); setCurrentTab('publicar'); setSelectedProjectId(null); }}
-          >
+          <a href="#/publicar" className={activa === "publicar" ? "activo" : ""}>
+            <IconoPublicar clase="menu-icono" />
             Publicar proyecto
           </a>
-          <a 
-            href="#solicitudes" 
-            className={currentTab === 'solicitudes' ? 'activo' : ''}
-            onClick={(e) => { e.preventDefault(); setCurrentTab('solicitudes'); setSelectedProjectId(null); }}
-          >
+          <a href="#/solicitudes" className={activa === "solicitudes" ? "activo" : ""}>
+            <IconoSolicitudes clase="menu-icono" />
             Mis solicitudes
+            {conteos.pendientesPorResponder > 0 && (
+              <span className="insignia" aria-label={`${conteos.pendientesPorResponder} por responder`}>
+                {conteos.pendientesPorResponder}
+              </span>
+            )}
           </a>
         </nav>
+        <div className="menu-pie">
+          <strong>Proyectos liderados por mujeres</strong>
+          Visibiliza, conecta y potencia tu iniciativa.
+        </div>
       </aside>
 
-      {/* Contenido principal según la pestaña del menú */}
-      <main className="contenido">
-        {currentTab === 'explore' && !selectedProjectId && (
-          <ExploreProjects 
-            projects={mockProjects} 
-            onSelectProject={(id) => setSelectedProjectId(id)} 
-          />
-        )}
+      <div className="principal">
+        <header className="barra-superior">
+          <span className="miga">
+            Warmi Connect / <strong>{TITULO_RUTA[ruta]}</strong>
+          </span>
+          <span className="usuaria">
+            <span className="avatar" aria-hidden="true">
+              VM
+            </span>
+            Valeria Mendoza
+          </span>
+        </header>
 
-        {selectedProjectId && selectedProjectDetails && (
-          <ProjectDetail 
-            project={selectedProjectDetails} 
-            onBack={() => setSelectedProjectId(null)} 
-            onOpenCollaborationModal={() => setIsModalOpen(true)} 
-          />
-        )}
-
-        {currentTab === 'publicar' && (
-          <PublicarProyecto />
-        )}
-
-        {currentTab === 'solicitudes' && (
-          <MisSolicitudes />
-        )}
-      </main>
-
-      {/* Modal flotante de colaboración */}
-      {isModalOpen && selectedProjectDetails && (
-        <CollaborationModal 
-          project={selectedProjectDetails} 
-          onClose={() => setIsModalOpen(false)} 
-          onSubmitRequest={handleSendRequest} 
-        />
-      )}
+        <div className="cuerpo">
+          <main className="contenido">{pantalla}</main>
+          <PanelLateral ruta={ruta} conteos={conteos} onIr={ir} />
+        </div>
+      </div>
     </div>
   );
 }

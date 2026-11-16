@@ -28,9 +28,11 @@ const FILTROS: { valor: Filtro; texto: string }[] = [
 interface Props {
   onExplorar: () => void;
   onPublicar: () => void;
+  /** Avisa a la app que algo cambió, para actualizar los contadores del menú y del panel. */
+  onCambio?: () => void;
 }
 
-export function MisSolicitudes({ onExplorar, onPublicar }: Props) {
+export function MisSolicitudes({ onExplorar, onPublicar, onCambio }: Props) {
   const [pestana, setPestana] = useState<Pestana>("recibidas");
   const [filtro, setFiltro] = useState<Filtro>("todas");
   const [recibidas, setRecibidas] = useState<ReceivedRequest[]>([]);
@@ -64,11 +66,17 @@ export function MisSolicitudes({ onExplorar, onPublicar }: Props) {
 
   return (
     <section className="pagina">
-      <p className="eyebrow">Panel de colaboración</p>
-      <h1>Mis solicitudes</h1>
-      <p className="subtitulo">
-        Revisa quién quiere sumarse a tus proyectos y en qué va cada postulación que enviaste.
-      </p>
+      <div className="portada">
+        <p className="eyebrow">Panel de colaboración</p>
+        <h1>
+          Tus <em>solicitudes</em>
+        </h1>
+        <p className="subtitulo">
+          En <strong>Recibidas</strong> ves quién quiere sumarse a tus proyectos, con su perfil, su mensaje
+          y la fecha y hora en que escribió. En <strong>Enviadas</strong> sigues el estado de cada
+          postulación que hiciste.
+        </p>
+      </div>
 
       <div className="barra-solicitudes">
         <div className="pestanas" role="tablist">
@@ -124,11 +132,12 @@ export function MisSolicitudes({ onExplorar, onPublicar }: Props) {
                 <TarjetaRecibida
                   key={s.id}
                   solicitud={s}
-                  onActualizada={(nueva) =>
+                  onActualizada={(nueva) => {
                     setRecibidas((prev) =>
                       prev.map((x) => (x.id === nueva.id ? { ...x, status: nueva.status } : x)),
-                    )
-                  }
+                    );
+                    onCambio?.();
+                  }}
                 />
               ))
             : (visibles as SentRequest[]).map((s) => <TarjetaEnviada key={s.id} solicitud={s} />)}
@@ -179,7 +188,7 @@ function TarjetaRecibida({
   }
 
   return (
-    <li className="tarjeta solicitud">
+    <li className={`tarjeta solicitud estado-borde-${solicitud.status}`}>
       <div className="solicitud-cabecera">
         <Iniciales nombre={solicitud.sender.displayName} />
         <div className="solicitud-quien">
@@ -187,14 +196,38 @@ function TarjetaRecibida({
             {solicitud.sender.displayName}
             <span className="especialidad"> · {solicitud.sender.specialty}</span>
           </p>
-          <p className="meta">
-            Para <strong>{solicitud.project.title}</strong> · {fecha(solicitud.createdAt)}
-          </p>
+          <p className="meta">Quiere sumarse a tu proyecto</p>
         </div>
         <EtiquetaEstado estado={solicitud.status} />
       </div>
 
-      <blockquote className="mensaje">{solicitud.message}</blockquote>
+      <dl className="detalle-solicitud">
+        <div>
+          <dt>Proyecto</dt>
+          <dd>{solicitud.project.title}</dd>
+        </div>
+        <div>
+          <dt>Recibida</dt>
+          <dd>{fechaCompleta(solicitud.createdAt)}</dd>
+        </div>
+        {solicitud.sender.skills && solicitud.sender.skills.length > 0 && (
+          <div>
+            <dt>Habilidades</dt>
+            <dd>{solicitud.sender.skills.join(", ")}</dd>
+          </div>
+        )}
+        {solicitud.sender.bio && (
+          <div>
+            <dt>Sobre ella</dt>
+            <dd>{solicitud.sender.bio}</dd>
+          </div>
+        )}
+      </dl>
+
+      <div>
+        <p className="mensaje-titulo">Su mensaje</p>
+        <blockquote className="mensaje">{solicitud.message}</blockquote>
+      </div>
 
       {error && (
         <p className="alerta-error" role="alert">
@@ -231,18 +264,43 @@ function TarjetaEnviada({ solicitud }: { solicitud: SentRequest }) {
     rejected: "Esta vez no fue posible. Sigue explorando otros proyectos.",
   };
   return (
-    <li className="tarjeta solicitud">
+    <li className={`tarjeta solicitud estado-borde-${solicitud.status}`}>
       <div className="solicitud-cabecera">
         <div className="solicitud-quien">
           <p className="nombre">{solicitud.project.title}</p>
           <p className="meta">
-            <span className="etiqueta suave">{solicitud.project.category}</span> · Enviada{" "}
-            {fecha(solicitud.createdAt)}
+            <span className="etiqueta suave">{solicitud.project.category}</span> · Postulaste a este
+            proyecto
           </p>
         </div>
         <EtiquetaEstado estado={solicitud.status} />
       </div>
-      <blockquote className="mensaje">{solicitud.message}</blockquote>
+
+      <dl className="detalle-solicitud">
+        {solicitud.creator && (
+          <div>
+            <dt>Creadora</dt>
+            <dd>
+              {solicitud.creator.displayName} · {solicitud.creator.specialty}
+            </dd>
+          </div>
+        )}
+        <div>
+          <dt>Enviada</dt>
+          <dd>{fechaCompleta(solicitud.createdAt)}</dd>
+        </div>
+        {solicitud.supportNeed && (
+          <div>
+            <dt>Apoyo que piden</dt>
+            <dd>{solicitud.supportNeed}</dd>
+          </div>
+        )}
+      </dl>
+
+      <div>
+        <p className="mensaje-titulo">Tu mensaje</p>
+        <blockquote className="mensaje">{solicitud.message}</blockquote>
+      </div>
       <p className="nota">{nota[solicitud.status]}</p>
     </li>
   );
@@ -295,10 +353,11 @@ function Iniciales({ nombre }: { nombre: string }) {
   );
 }
 
-function fecha(iso: string) {
-  return new Date(iso).toLocaleDateString("es-PE", {
+function fechaCompleta(iso: string) {
+  return new Date(iso).toLocaleString("es-PE", {
     day: "numeric",
-    month: "short",
+    month: "long",
+    year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
   });

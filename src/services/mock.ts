@@ -85,6 +85,27 @@ const proyectos: ProjectDetails[] = [
   }),
 ];
 
+proyectos.push(
+  crearDetalle("p-cancer-ia", "u-camila", "2026-11-09T10:00:00Z", {
+    title: "Detección temprana del cáncer mediante IA",
+    category: "Ciencia",
+    problem: "El cáncer de mama se detecta tarde en zonas con poco acceso a especialistas.",
+    description:
+      "Modelo de IA que apoya a profesionales de salud para identificar signos tempranos en imágenes médicas.",
+    requiredSkills: ["Análisis de datos", "Investigación"],
+    supportNeed: "Limpiar y documentar el conjunto de datos de imágenes de prueba.",
+  }),
+  crearDetalle("p-bioplasticos", "u-lucia", "2026-11-08T10:00:00Z", {
+    title: "Bioplásticos a partir de residuos orgánicos",
+    category: "Medioambiente",
+    problem: "Los plásticos convencionales contaminan ríos y suelos agrícolas.",
+    description:
+      "Material biodegradable hecho con cáscaras y residuos de mercado para reducir la contaminación.",
+    requiredSkills: ["Medioambiente y sostenibilidad", "Comunicación y difusión"],
+    supportNeed: "Armar una campaña de difusión para conseguir aliados y centros de acopio.",
+  }),
+);
+
 const solicitudes: CollaborationRequest[] = [
   {
     id: "r-1",
@@ -232,7 +253,16 @@ export const mockServices: WarmiServices = {
       .filter((s) => s.senderId === sesion.id)
       .map((s) => {
         const p = proyectos.find((x) => x.id === s.projectId)!;
-        return copia({ ...s, project: { id: p.id, title: p.title, category: p.category } });
+        return copia({
+          ...s,
+          project: { id: p.id, title: p.title, category: p.category },
+          creator: {
+            id: p.creator.id,
+            displayName: p.creator.displayName,
+            specialty: p.creator.specialty,
+          },
+          supportNeed: p.supportNeed,
+        });
       });
   },
 
@@ -247,7 +277,13 @@ export const mockServices: WarmiServices = {
         return copia({
           ...s,
           project: { id: p.id, title: p.title },
-          sender: { id: r.id, displayName: r.displayName, specialty: r.specialty },
+          sender: {
+            id: r.id,
+            displayName: r.displayName,
+            specialty: r.specialty,
+            skills: r.skills,
+            bio: r.bio,
+          },
         });
       });
   },
