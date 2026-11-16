@@ -6,6 +6,7 @@ import type {
   RequestStatus,
   SentRequest,
 } from "../../contracts/models";
+import { IconoCorreo, IconoInstagram, IconoLinkedin } from "../../components/Ilustraciones";
 import { services } from "../../services";
 import { mensajeDeError } from "../publicar/PublicarProyecto";
 
@@ -229,6 +230,10 @@ function TarjetaRecibida({
         <blockquote className="mensaje">{solicitud.message}</blockquote>
       </div>
 
+      {solicitud.status === "accepted" && solicitud.sender.contact && (
+        <ContactoAceptada contacto={solicitud.sender.contact} nombre={solicitud.sender.displayName} />
+      )}
+
       {error && (
         <p className="alerta-error" role="alert">
           {error}
@@ -303,6 +308,45 @@ function TarjetaEnviada({ solicitud }: { solicitud: SentRequest }) {
       </div>
       <p className="nota">{nota[solicitud.status]}</p>
     </li>
+  );
+}
+
+/** Los datos de contacto solo se muestran cuando aceptas la colaboración. */
+function ContactoAceptada({
+  contacto,
+  nombre,
+}: {
+  contacto: NonNullable<ReceivedRequest["sender"]["contact"]>;
+  nombre: string;
+}) {
+  const instagram = contacto.instagram?.replace(/^@/, "");
+  return (
+    <div className="contacto-aceptada">
+      <p className="mensaje-titulo">Contacta a {nombre.split(" ")[0]}</p>
+      <ul className="contactos">
+        {contacto.email && (
+          <li>
+            <a href={`mailto:${contacto.email}`}>
+              <IconoCorreo clase="icono-contacto" /> {contacto.email}
+            </a>
+          </li>
+        )}
+        {contacto.linkedin && (
+          <li>
+            <a href={contacto.linkedin} target="_blank" rel="noopener noreferrer">
+              <IconoLinkedin clase="icono-contacto" /> LinkedIn
+            </a>
+          </li>
+        )}
+        {instagram && (
+          <li>
+            <a href={`https://www.instagram.com/${instagram}`} target="_blank" rel="noopener noreferrer">
+              <IconoInstagram clase="icono-contacto" /> @{instagram}
+            </a>
+          </li>
+        )}
+      </ul>
+    </div>
   );
 }
 

@@ -32,12 +32,22 @@ export type WarmiErrorCode =
   | "NETWORK"
   | "UNEXPECTED";
 
+/** Datos de contacto que la persona decide mostrar (todos opcionales). */
+export interface ContactInfo {
+  email?: string;
+  /** Dirección completa, por ejemplo https://www.linkedin.com/in/usuario */
+  linkedin?: string;
+  /** Usuario sin arroba, por ejemplo warmi.connect */
+  instagram?: string;
+}
+
 export interface PublicProfile {
   id: string;
   displayName: string;
   specialty: string;
   skills: Skill[];
   bio: string;
+  contact?: ContactInfo;
 }
 
 export interface SessionUser {
@@ -52,6 +62,8 @@ export interface ProjectInput {
   description: string;
   requiredSkills: Skill[];
   supportNeed: string;
+  /** Imagen de portada opcional (data URL en el mock; URL pública cuando exista Storage). */
+  coverImage?: string;
 }
 
 export interface ProjectFilters {
@@ -72,6 +84,7 @@ export interface ProjectCard {
   problem: string;
   requiredSkills: Skill[];
   supportNeed: string;
+  coverImage?: string;
   creator: Pick<PublicProfile, "id" | "displayName" | "specialty">;
 }
 
@@ -101,5 +114,5 @@ export interface SentRequest extends CollaborationRequest {
 export interface ReceivedRequest extends CollaborationRequest {
   project: Pick<ProjectCard, "id" | "title">;
   sender: Pick<PublicProfile, "id" | "displayName" | "specialty"> &
-    Partial<Pick<PublicProfile, "skills" | "bio">>;
+    Partial<Pick<PublicProfile, "skills" | "bio" | "contact">>;
 }

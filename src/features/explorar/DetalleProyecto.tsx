@@ -1,6 +1,12 @@
 // Ventana de detalle de un proyecto + tarjeta creativa para solicitar colaboración.
 import { useEffect, useState, type FormEvent } from "react";
 import type { ProjectDetails } from "../../contracts/models";
+import {
+  IconoCorreo,
+  IconoInstagram,
+  IconoLinkedin,
+  IlustracionCategoria,
+} from "../../components/Ilustraciones";
 import { services } from "../../services";
 import { mensajeDeError } from "../publicar/PublicarProyecto";
 
@@ -12,9 +18,10 @@ interface Props {
   postulada: boolean;
   onCerrar: () => void;
   onEnviada: () => void;
+  onIrASolicitudes?: () => void;
 }
 
-export function DetalleProyecto({ proyectoId, postulada, onCerrar, onEnviada }: Props) {
+export function DetalleProyecto({ proyectoId, postulada, onCerrar, onEnviada, onIrASolicitudes }: Props) {
   const [proyecto, setProyecto] = useState<ProjectDetails | null>(null);
   const [miId, setMiId] = useState("");
   const [error, setError] = useState("");
@@ -89,11 +96,20 @@ export function DetalleProyecto({ proyectoId, postulada, onCerrar, onEnviada }: 
         ) : (
           <>
             <div className="modal-cabecera">
+              <div className="modal-arte" aria-hidden="true">
+                {proyecto.coverImage ? (
+                  <img src={proyecto.coverImage} alt="" />
+                ) : (
+                  <IlustracionCategoria categoria={proyecto.category} />
+                )}
+              </div>
               <button className="cerrar" onClick={onCerrar} aria-label="Cerrar">
                 ✕
               </button>
-              <p className="eyebrow">Convocatoria · {proyecto.category}</p>
-              <h2>{proyecto.title}</h2>
+              <div className="modal-titulos">
+                <p className="eyebrow">Convocatoria abierta · {proyecto.category}</p>
+                <h2>{proyecto.title}</h2>
+              </div>
             </div>
 
             <div className="modal-cuerpo">
@@ -120,20 +136,23 @@ export function DetalleProyecto({ proyectoId, postulada, onCerrar, onEnviada }: 
                     ))}
                   </div>
                 </div>
-                <div className="bloque">
-                  <h3>Liderado por</h3>
-                  <p>
-                    <strong>{proyecto.creator.displayName}</strong> · {proyecto.creator.specialty}
-                  </p>
-                  <p className="nota">{proyecto.creator.bio}</p>
-                </div>
               </div>
 
+              <div className="columna-derecha">
+              <ConvocaPersona proyecto={proyecto} />
               <div className="solicitar">
                 {proyecto.ownerId === miId ? (
                   <>
                     <h3>Este es tu proyecto</h3>
-                    <p>Las solicitudes de otras mujeres llegarán a “Mis solicitudes”.</p>
+                    <p>
+                      Así lo ven las demás mujeres. Cuando alguien quiera sumarse, su solicitud llegará a “Mis
+                      solicitudes”, con su perfil y su mensaje.
+                    </p>
+                    {onIrASolicitudes && (
+                      <button className="boton primario" onClick={onIrASolicitudes}>
+                        Ver mis solicitudes
+                      </button>
+                    )}
                   </>
                 ) : enviada || postulada ? (
                   <div className="exito-solicitud" role="status">
@@ -190,10 +209,74 @@ export function DetalleProyecto({ proyectoId, postulada, onCerrar, onEnviada }: 
                   </form>
                 )}
               </div>
+              </div>
             </div>
           </>
         )}
       </div>
     </div>
+  );
+}
+
+/** Quién convoca: perfil público y formas de contacto. */
+function ConvocaPersona({ proyecto }: { proyecto: ProjectDetails }) {
+  const c = proyecto.creator;
+  const iniciales = c.displayName
+    .split(" ")
+    .slice(0, 2)
+    .map((x) => x[0])
+    .join("");
+  const instagram = c.contact?.instagram?.replace(/^@/, "");
+  const sinContacto = !c.contact?.email && !c.contact?.linkedin && !instagram;
+  return (
+    <section className="convoca" aria-label="Quién convoca">
+      <p className="eyebrow">Quién convoca</p>
+      <div className="convoca-cabecera">
+        <span className="avatar grande" aria-hidden="true">
+          {iniciales}
+        </span>
+        <div>
+          <h3>{c.displayName}</h3>
+          <p className="especialidad">{c.specialty}</p>
+        </div>
+      </div>
+      <p className="convoca-bio">{c.bio}</p>
+      {c.skills.length > 0 && (
+        <div className="lista-etiquetas">
+          {c.skills.map((s) => (
+            <span key={s} className="etiqueta suave">
+              {s}
+            </span>
+          ))}
+        </div>
+      )}
+      {sinContacto ? (
+        <p className="nota">Para contactarla, envía tu solicitud: ella te responderá desde Warmi Connect.</p>
+      ) : (
+        <ul className="contactos">
+          {c.contact?.email && (
+            <li>
+              <a href={`mailto:${c.contact.email}`}>
+                <IconoCorreo clase="icono-contacto" /> {c.contact.email}
+              </a>
+            </li>
+          )}
+          {c.contact?.linkedin && (
+            <li>
+              <a href={c.contact.linkedin} target="_blank" rel="noopener noreferrer">
+                <IconoLinkedin clase="icono-contacto" /> LinkedIn
+              </a>
+            </li>
+          )}
+          {instagram && (
+            <li>
+              <a href={`https://www.instagram.com/${instagram}`} target="_blank" rel="noopener noreferrer">
+                <IconoInstagram clase="icono-contacto" /> @{instagram}
+              </a>
+            </li>
+          )}
+        </ul>
+      )}
+    </section>
   );
 }

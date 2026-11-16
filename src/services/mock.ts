@@ -25,6 +25,11 @@ const perfiles: PublicProfile[] = [
     specialty: "Creadora y diseñadora",
     skills: ["Diseño gráfico", "Gestión de proyectos"],
     bio: "Diseñadora interesada en proyectos de impacto ambiental.",
+    contact: {
+      email: "valeria.mendoza@ejemplo.pe",
+      linkedin: "https://www.linkedin.com/in/valeria-mendoza-ejemplo",
+      instagram: "biotintes.andinos",
+    },
   },
   {
     id: "u-sofia",
@@ -32,6 +37,7 @@ const perfiles: PublicProfile[] = [
     specialty: "Diseñadora gráfica",
     skills: ["Diseño gráfico"],
     bio: "Diseño de etiquetas y packaging sostenible.",
+    contact: { email: "sofia.carrion@ejemplo.pe", instagram: "sofia.disena" },
   },
   {
     id: "u-marcela",
@@ -39,6 +45,7 @@ const perfiles: PublicProfile[] = [
     specialty: "Especialista en marketing digital",
     skills: ["Comunicación y difusión"],
     bio: "Planifico contenidos para proyectos sociales.",
+    contact: { email: "marcela.vega@ejemplo.pe", linkedin: "https://www.linkedin.com/in/marcela-vega-ejemplo" },
   },
   {
     id: "u-camila",
@@ -46,6 +53,11 @@ const perfiles: PublicProfile[] = [
     specialty: "Gestora social",
     skills: ["Gestión de proyectos", "Investigación"],
     bio: "Trabajo con cooperativas de mujeres en Lima.",
+    contact: {
+      email: "camila.torres@ejemplo.pe",
+      linkedin: "https://www.linkedin.com/in/camila-torres-ejemplo",
+      instagram: "camila.gestora",
+    },
   },
   {
     id: "u-lucia",
@@ -53,6 +65,7 @@ const perfiles: PublicProfile[] = [
     specialty: "Docente de tecnología",
     skills: ["Desarrollo web", "Educación y pedagogía"],
     bio: "Enseño programación a jóvenes en zonas rurales.",
+    contact: { email: "lucia.quispe@ejemplo.pe", instagram: "mujerescode" },
   },
 ];
 
@@ -283,6 +296,7 @@ export const mockServices: WarmiServices = {
             specialty: r.specialty,
             skills: r.skills,
             bio: r.bio,
+            contact: r.contact,
           },
         });
       });

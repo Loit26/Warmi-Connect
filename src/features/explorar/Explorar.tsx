@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Category, ProjectCard } from "../../contracts/models";
 import { IconoExplorar } from "../../components/Iconos";
+import { IlustracionCategoria, IlustracionHero } from "../../components/Ilustraciones";
 import { services } from "../../services";
 import { CATEGORIAS } from "../publicar/validacion";
 import { mensajeDeError } from "../publicar/PublicarProyecto";
@@ -10,13 +11,14 @@ import { DetalleProyecto } from "./DetalleProyecto";
 interface Props {
   onPublicar: () => void;
   onSolicitudEnviada: () => void;
+  onIrASolicitudes?: () => void;
 }
 
 export function claseTema(cat: Category): string {
   return `tema-${cat.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "-")}`;
 }
 
-export function Explorar({ onPublicar, onSolicitudEnviada }: Props) {
+export function Explorar({ onPublicar, onSolicitudEnviada, onIrASolicitudes }: Props) {
   const [proyectos, setProyectos] = useState<ProjectCard[]>([]);
   const [categoria, setCategoria] = useState<Category | "todas">("todas");
   const [texto, setTexto] = useState("");
@@ -66,6 +68,7 @@ export function Explorar({ onPublicar, onSolicitudEnviada }: Props) {
   return (
     <section className="pagina">
       <div className="portada">
+        <IlustracionHero clase="portada-arte" />
         <p className="eyebrow">Convocatorias de colaboración</p>
         <h1>
           Proyectos de mujeres que buscan <em>aliadas</em>
@@ -154,6 +157,7 @@ export function Explorar({ onPublicar, onSolicitudEnviada }: Props) {
           proyectoId={abierto}
           postulada={yaPostuladas.has(abierto)}
           onCerrar={() => setAbierto(null)}
+          onIrASolicitudes={onIrASolicitudes}
           onEnviada={() => {
             setYaPostuladas((prev) => new Set(prev).add(abierto));
             onSolicitudEnviada();
@@ -177,9 +181,17 @@ function TarjetaConvocatoria({
 }) {
   return (
     <li className={`tarjeta convocatoria ${claseTema(p.category)}`}>
+      <div className="convocatoria-imagen">
+        {p.coverImage ? (
+          <img src={p.coverImage} alt={`Portada de ${p.title}`} />
+        ) : (
+          <IlustracionCategoria categoria={p.category} />
+        )}
+        <span className="sello-categoria flotante">{p.category}</span>
+      </div>
       <div className="convocatoria-cabecera">
         <div className="convocatoria-fila">
-          <span className="sello-categoria">{p.category}</span>
+          <span className="etiqueta-convoca">Convoca</span>
           <span className="sello-abierta">{esMia ? "Tu proyecto" : postulada ? "Ya postulaste" : "Abierta"}</span>
         </div>
         <h3>{p.title}</h3>

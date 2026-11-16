@@ -86,7 +86,13 @@ export default function App() {
       />
     );
   } else if (ruta === "explorar") {
-    pantalla = <Explorar onPublicar={() => ir("publicar")} onSolicitudEnviada={refrescarConteos} />;
+    pantalla = (
+      <Explorar
+        onPublicar={() => ir("publicar")}
+        onSolicitudEnviada={refrescarConteos}
+        onIrASolicitudes={() => ir("solicitudes")}
+      />
+    );
   } else {
     pantalla = (
       <PublicarProyecto
