@@ -1,0 +1,82 @@
+[33mcommit 9bae859b4c580c1617e461c8f0bf3bbd3d852940[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32m2-contratos-compartidos[m[33m, [m[1;31morigin/2-contratos-compartidos[m[33m)[m
+Author: Loit26 <italorenteriacc@gmail.com>
+Date:   Sun Nov 15 17:14:04 2026 -0500
+
+    feat(contracts): define shared contracts
+
+ docs/contratos.md         | 109 [32m++++++++++++++++++++++++++++++++++++++++++++++[m
+ src/contracts/models.ts   | 100 [32m++++++++++++++++++++++++++++++++++++++++++[m
+ src/contracts/services.ts |  48 [32m++++++++++++++++++++[m
+ 3 files changed, 257 insertions(+)
+
+[33mcommit d08981a136253e5eed3402042ab9fb89024b6a41[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Author: Loit26 <italorenteriacc@gmail.com>
+Date:   Fri Nov 13 20:59:59 2026 -0500
+
+    Initial commit
+
+ .agents/skills/abrir-pr/SKILL.md                   |  20 [32m++[m
+ .agents/skills/clarificar-spec/SKILL.md            |  22 [32m++[m
+ .agents/skills/depurar-con-metodo/SKILL.md         |  39 [32m+++[m
+ .agents/skills/desplegar/SKILL.md                  |  26 [32m++[m
+ .agents/skills/diseno/SKILL.md                     |  51 [32m+++[m
+ .agents/skills/escribir-plan/SKILL.md              |  44 [32m+++[m
+ .agents/skills/idea-a-spec/SKILL.md                |  46 [32m+++[m
+ .agents/skills/probar/SKILL.md                     |  35 [32m+++[m
+ .agents/skills/recibir-revision/SKILL.md           |  31 [32m++[m
+ .agents/skills/revisar-entrega/SKILL.md            |  33 [32m++[m
+ .agents/skills/revisar-pr/SKILL.md                 |  31 [32m++[m
+ .../skills/verificar-antes-de-terminar/SKILL.md    |  29 [32m++[m
+ .gitattributes                                     |   5 [32m+[m
+ .github/ISSUE_TEMPLATE/bug.yml                     |  45 [32m+++[m
+ .github/ISSUE_TEMPLATE/config.yml                  |   5 [32m+[m
+ .github/ISSUE_TEMPLATE/tarea.yml                   |  48 [32m+++[m
+ .github/agents/desarrollador.agent.md              |  28 [32m++[m
+ .github/agents/desplegador.agent.md                |  24 [32m++[m
+ .github/agents/especificador.agent.md              |  26 [32m++[m
+ .github/agents/planificador.agent.md               |  26 [32m++[m
+ .github/agents/qa.agent.md                         |  23 [32m++[m
+ .github/copilot-instructions.md                    |  12 [32m+[m
+ .github/pull_request_template.md                   |  32 [32m++[m
+ .github/workflows/ci.yml                           |  44 [32m+++[m
+ .gitignore                                         |  28 [32m++[m
+ .opencode/agents/desarrollador.md                  |  28 [32m++[m
+ .opencode/agents/desplegador.md                    |  24 [32m++[m
+ .opencode/agents/especificador.md                  |  26 [32m++[m
+ .opencode/agents/planificador.md                   |  26 [32m++[m
+ .opencode/agents/qa.md                             |  23 [32m++[m
+ .vscode/extensions.json                            |   7 [32m+[m
+ .vscode/mcp.json                                   |  11 [32m+[m
+ AGENTS.md                                          |  67 [32m++++[m
+ CONTRIBUTING.md                                    |  95 [32m++++++[m
+ LICENSE                                            |  21 [32m++[m
+ NOTICE.md                                          |   9 [32m+[m
+ README.md                                          | 343 [32m+++++++++++++++++++++[m
+ docs/COMANDOS-GIT.md                               | 324 [32m+++++++++++++++++++[m
+ docs/EJEMPLO-TAREA.md                              | 122 [32m++++++++[m
+ docs/FLUJO-SDD.md                                  |  54 [32m++++[m
+ docs/GUIA-INICIO.md                                |  97 [32m++++++[m
+ docs/INSTALACION.md                                | 137 [32m++++++++[m
+ docs/ISSUES-Y-TABLERO.md                           | 121 [32m++++++++[m
+ docs/PLANTILLA-README.md                           | 124 [32m++++++++[m
+ docs/RETO.md                                       |  43 [32m+++[m
+ docs/SKILLS-EXTRA.md                               |  30 [32m++[m
+ docs/USAR-SPEC.md                                  |  86 [32m++++++[m
+ docs/constitution.md                               |  11 [32m+[m
+ docs/pitch.md                                      |  41 [32m+++[m
+ opencode.json                                      |  16 [32m+[m
+ setup/configurar-git.ps1                           |  42 [32m+++[m
+ setup/configurar-git.sh                            |  42 [32m+++[m
+ setup/crear-etiquetas.ps1                          |  23 [32m++[m
+ setup/crear-etiquetas.sh                           |  19 [32m++[m
+ setup/crear-tablero.ps1                            |  35 [32m+++[m
+ setup/crear-tablero.sh                             |  28 [32m++[m
+ setup/instalar.ps1                                 |  67 [32m++++[m
+ setup/instalar.sh                                  |  68 [32m++++[m
+ setup/verificar.ps1                                |  50 [32m+++[m
+ setup/verificar.sh                                 |  46 [32m+++[m
+ specs/000-plantilla/plan.md                        |  27 [32m++[m
+ specs/000-plantilla/spec.md                        |  49 [32m+++[m
+ specs/000-plantilla/tasks.md                       |   9 [32m+[m
+ tests/README.md                                    |   9 [32m+[m
+ 64 files changed, 3153 insertions(+)

@@ -1,88 +1,138 @@
-// Estructura general: menú lateral + pantalla activa.
-// Navegación simple por "#" en la URL para no agregar librerías.
-// "Explorar proyectos" es el módulo de C: aquí solo hay un espacio reservado.
-import { useEffect, useState } from "react";
-import type { ProjectDetails } from "./contracts/models";
-import { Confirmacion } from "./features/publicar/Confirmacion";
-import { PublicarProyecto } from "./features/publicar/PublicarProyecto";
-import { MisSolicitudes } from "./features/solicitudes/MisSolicitudes";
+import React, { useState } from 'react';
+import ExploreProjects from './components/ExploreProjects';
+import ProjectDetail from './components/ProjectDetail';
+import CollaborationModal from './components/CollaborationModal';
 
-type Ruta = "explorar" | "publicar" | "publicado" | "solicitudes";
+// Importando los módulos creados por tus compañeros (Persona A)
+import { PublicarProyecto } from './features/publicar/PublicarProyecto';
+import { MisSolicitudes } from './features/solicitudes/MisSolicitudes';
 
-function leerRuta(): Ruta {
-  const r = window.location.hash.replace("#/", "");
-  return (["explorar", "publicar", "publicado", "solicitudes"] as Ruta[]).includes(r as Ruta)
-    ? (r as Ruta)
-    : "publicar";
-}
+import { ProjectCard, ProjectDetails, RequestInput } from './contracts/models';
 
 export default function App() {
-  const [ruta, setRuta] = useState<Ruta>(leerRuta);
-  const [publicado, setPublicado] = useState<ProjectDetails | null>(null);
+  const [currentTab, setCurrentTab] = useState<'explore' | 'publicar' | 'solicitudes'>('explore');
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    const alCambiar = () => setRuta(leerRuta());
-    window.addEventListener("hashchange", alCambiar);
-    return () => window.removeEventListener("hashchange", alCambiar);
-  }, []);
+  // Datos mock iniciales para el catálogo
+  const mockProjects: ProjectCard[] = [
+    {
+      id: '1',
+      ownerId: 'user-1',
+      title: 'Detección temprana del cáncer mediante IA',
+      category: 'Ciencia',
+      problem: 'Modelo de IA para identificar signos tempranos de cáncer de mama en imágenes médicas.',
+      requiredSkills: ['Análisis de datos', 'Investigación'],
+      supportNeed: 'Financiamiento y validación clínica',
+      creator: {
+        id: 'user-1',
+        displayName: 'Dra. Valeria Torres',
+        specialty: 'Investigadora en Salud'
+      }
+    },
+    {
+      id: '2',
+      ownerId: 'user-2',
+      title: 'Bioplásticos a partir de residuos orgánicos',
+      category: 'Medioambiente',
+      problem: 'Desarrollo de un material biodegradable que reduce la contaminación por plásticos.',
+      requiredSkills: ['Investigación', 'Medioambiente y sostenibilidad'],
+      supportNeed: 'Aliados de laboratorio',
+      creator: {
+        id: 'user-2',
+        displayName: 'Ing. Sofia Ramos',
+        specialty: 'Ingeniera ambiental'
+      }
+    }
+  ];
 
-  const ir = (r: Ruta) => {
-    window.location.hash = `/${r}`;
-    window.scrollTo(0, 0);
+  const selectedProjectDetails: ProjectDetails | null = selectedProjectId 
+    ? {
+        ...mockProjects.find(p => p.id === selectedProjectId)!,
+        description: 'Descripción detallada de la iniciativa, metodología aplicada y avance actual en el laboratorio o campo de estudio.',
+        creator: {
+          id: mockProjects.find(p => p.id === selectedProjectId)?.ownerId || '1',
+          displayName: mockProjects.find(p => p.id === selectedProjectId)?.creator.displayName || '',
+          specialty: mockProjects.find(p => p.id === selectedProjectId)?.creator.specialty || '',
+          skills: ['Investigación', 'Análisis de datos'],
+          bio: 'Especialista dedicada al desarrollo científico.'
+        },
+        createdAt: '2026-03-01'
+      }
+    : null;
+
+  const handleSendRequest = async (input: RequestInput) => {
+    console.log("Solicitud enviada:", input);
+    await new Promise(resolve => setTimeout(resolve, 800));
   };
-
-  let pantalla;
-  if (ruta === "publicado" && publicado) {
-    pantalla = (
-      <Confirmacion
-        proyecto={publicado}
-        onIrASolicitudes={() => ir("solicitudes")}
-        onPublicarOtro={() => ir("publicar")}
-      />
-    );
-  } else if (ruta === "solicitudes") {
-    pantalla = <MisSolicitudes onExplorar={() => ir("explorar")} onPublicar={() => ir("publicar")} />;
-  } else if (ruta === "explorar") {
-    pantalla = (
-      <section className="pagina">
-        <h1>Explorar proyectos</h1>
-        <p className="subtitulo">Este módulo lo desarrolla C (catálogo, filtros y detalle).</p>
-      </section>
-    );
-  } else {
-    pantalla = (
-      <PublicarProyecto
-        onPublicado={(p) => {
-          setPublicado(p);
-          ir("publicado");
-        }}
-        onCancelar={() => ir("explorar")}
-      />
-    );
-  }
-
-  const activa = ruta === "publicado" ? "publicar" : ruta;
 
   return (
     <div className="app">
+      {/* Menú lateral oficial de Warmi Connect */}
       <aside className="menu">
         <div className="marca">
           <span className="marca-nombre">Warmi Connect</span>
           <span className="marca-lema">Conecta · Colabora · Impulsa</span>
         </div>
         <nav>
-          <a href="#/explorar" className={activa === "explorar" ? "activo" : ""}>
+          <a 
+            href="#explore" 
+            className={currentTab === 'explore' && !selectedProjectId ? 'activo' : ''}
+            onClick={(e) => { e.preventDefault(); setCurrentTab('explore'); setSelectedProjectId(null); }}
+          >
             Explorar proyectos
           </a>
-          <a href="#/publicar" className={activa === "publicar" ? "activo" : ""}>
+          <a 
+            href="#publicar" 
+            className={currentTab === 'publicar' ? 'activo' : ''}
+            onClick={(e) => { e.preventDefault(); setCurrentTab('publicar'); setSelectedProjectId(null); }}
+          >
             Publicar proyecto
           </a>
-          <a href="#/solicitudes" className={activa === "solicitudes" ? "activo" : ""}>
+          <a 
+            href="#solicitudes" 
+            className={currentTab === 'solicitudes' ? 'activo' : ''}
+            onClick={(e) => { e.preventDefault(); setCurrentTab('solicitudes'); setSelectedProjectId(null); }}
+          >
             Mis solicitudes
           </a>
         </nav>
       </aside>
-      <main className="contenido">{pantalla}</main>
+
+      {/* Contenido principal según la pestaña del menú */}
+      <main className="contenido">
+        {currentTab === 'explore' && !selectedProjectId && (
+          <ExploreProjects 
+            projects={mockProjects} 
+            onSelectProject={(id) => setSelectedProjectId(id)} 
+          />
+        )}
+
+        {selectedProjectId && selectedProjectDetails && (
+          <ProjectDetail 
+            project={selectedProjectDetails} 
+            onBack={() => setSelectedProjectId(null)} 
+            onOpenCollaborationModal={() => setIsModalOpen(true)} 
+          />
+        )}
+
+        {currentTab === 'publicar' && (
+          <PublicarProyecto />
+        )}
+
+        {currentTab === 'solicitudes' && (
+          <MisSolicitudes />
+        )}
+      </main>
+
+      {/* Modal flotante de colaboración */}
+      {isModalOpen && selectedProjectDetails && (
+        <CollaborationModal 
+          project={selectedProjectDetails} 
+          onClose={() => setIsModalOpen(false)} 
+          onSubmitRequest={handleSendRequest} 
+        />
+      )}
     </div>
   );
 }
