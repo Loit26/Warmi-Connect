@@ -134,8 +134,7 @@ Inversión estimada para el piloto: **S/ 400**.
 ## 🧪 Validación con usuarias
 
 - **Feedback del jurado (Grupo 23):** reconoció los datos concretos de RENACYT y Prociencia, el presupuesto que cierra en S/ 400 con metas mensuales, y que el proyecto, no la persona, sea el centro. Pidió mostrar con encuestas o entrevistas que la visibilidad es la barrera real, explicar qué ofrece frente a LinkedIn, ResearchGate o GitHub, definir qué es una "conexión", asegurar organizaciones aliadas y resolver la protección de ideas publicadas.
-- **Encuesta a 20 mujeres con proyectos (enero de 2027):** [COMPLETAR con resultados cuando existan].
-- **Entrevistas:** [COMPLETAR].
+
 
 Registro completo en `docs/validacion/`.
 
@@ -144,19 +143,16 @@ Registro completo en `docs/validacion/`.
 ## 📖 Instrucciones de ejecución
 
 ```bash
-cd [CARPETA-APP]
 # instalar dependencias
 # iniciar en modo desarrollo
 ```
 
-Variables de entorno: [COMPLETAR].
 
 ## 📚 Documentación
 
 | Documento | Qué contiene |
 |---|---|
 | Propuesta de solución | [LINK DE LA PROPUESTA] |
-| Pitch | [LINK / archivo] |
 | Diseño de pantallas | `docs/diseno/` |
 | Investigación | Fuentes del problema (abajo) |
 | Validación | `docs/validacion/` |
