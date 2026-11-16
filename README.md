@@ -99,19 +99,6 @@ El diseño de la pantalla de inicio incluye:
 > - [ ] Listado de convocatorias
 > - [ ] Asistente Warmi IA / *matching* con IA
 
-## ⚙️ Arquitectura y tecnologías
-
-| Capa | Tecnología |
-|---|---|
-| Framework | [COMPLETAR] |
-| Estilos | [COMPLETAR] |
-| Base de datos | [COMPLETAR] |
-| Autenticación | [COMPLETAR] |
-| IA (asistente y *matching*) | [COMPLETAR] |
-| Despliegue | [COMPLETAR] |
-
-Decisiones técnicas: [COMPLETAR]. La propuesta contempla usar hosting, base de datos y herramientas gratuitas, con programación y diseño voluntarios.
-
 ## 🤝 Qué entendemos por "conexión" y cómo cuidamos las ideas
 
 > **[CONFIRMAR EN EQUIPO]** Estos dos puntos salieron como oportunidades de mejora en el feedback. Propuesta de redacción:
