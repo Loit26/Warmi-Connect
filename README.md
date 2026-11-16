@@ -24,8 +24,6 @@ Proyecto del **Grupo 23** · Eje 2: Orientación laboral · *Talento visible y a
 └── README.md
 ```
 
-*(Ajustar a la estructura real cuando se suba el repositorio.)*
-
 ## 🎯 Problema y solución
 
 ### La brecha: hay proyectos de mujeres, pero no se ven
