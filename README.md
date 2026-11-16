@@ -92,8 +92,6 @@ El diseño de la pantalla de inicio incluye:
 
 ### Qué funciona hoy
 
-> **[COMPLETAR]** Marcar lo que ya esté implementado y lo que sea solo diseño. Por ejemplo:
->
 > - [ ] Registro y perfil de la creadora
 > - [ ] Publicar y editar la ficha de un proyecto
 > - [ ] Explorar por categorías, buscar y filtrar
